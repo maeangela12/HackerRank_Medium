@@ -1,0 +1,108 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Text;
+using System;
+
+class Result
+{
+
+    /*
+     * Complete the 'componentsInGraph' function below.
+     *
+     * The function is expected to return an INTEGER_ARRAY.
+     * The function accepts 2D_INTEGER_ARRAY gb as parameter.
+     */
+
+    public static List<int> componentsInGraph(List<List<int>> gb)
+    {
+        Dictionary<int, List<int>> graph = new Dictionary<int, List<int>>();
+        foreach (var edge in gb)
+        {
+            int u = edge[0];
+            int v = edge[1];
+
+            if (!graph.ContainsKey(u)) graph[u] = new List<int>();
+            if (!graph.ContainsKey(v)) graph[v] = new List<int>();
+
+            graph[u].Add(v);
+            graph[v].Add(u);
+        }
+
+        HashSet<int> visited = new HashSet<int>();
+        List<int> componentSizes = new List<int>();
+
+        foreach (var node in graph.Keys)
+        {
+            if (!visited.Contains(node))
+            {
+                int size = 0;
+                Queue<int> queue = new Queue<int>();
+                queue.Enqueue(node);
+                visited.Add(node);
+
+                while (queue.Count > 0)
+                {
+                    int current = queue.Dequeue();
+                    size++;
+
+                    foreach (var neighbor in graph[current])
+                    {
+                        if (!visited.Contains(neighbor))
+                        {
+                            visited.Add(neighbor);
+                            queue.Enqueue(neighbor);
+                        }
+                    }
+                }
+
+                componentSizes.Add(size);
+            }
+        }
+
+        componentSizes.RemoveAll(x => x <= 1);
+
+        int smallest = int.MaxValue;
+        int largest = int.MinValue;
+
+        foreach (var size in componentSizes)
+        {
+            if (size < smallest) smallest = size;
+            if (size > largest) largest = size;
+        }
+
+        return new List<int> { smallest, largest };
+    }
+}
+
+class Solution
+{
+    public static void Main(string[] args)
+    {
+        TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
+
+        int n = Convert.ToInt32(Console.ReadLine().Trim());
+
+        List<List<int>> gb = new List<List<int>>();
+
+        for (int i = 0; i < n; i++)
+        {
+            gb.Add(Console.ReadLine().TrimEnd().Split(' ').ToList().Select(gbTemp => Convert.ToInt32(gbTemp)).ToList());
+        }
+
+        List<int> result = Result.componentsInGraph(gb);
+
+        textWriter.WriteLine(String.Join(" ", result));
+
+        textWriter.Flush();
+        textWriter.Close();
+    }
+}
