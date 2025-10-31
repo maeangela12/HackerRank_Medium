@@ -1,0 +1,44 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+class Solution {
+    static void Main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution */
+        
+        int q = int.Parse(Console.ReadLine());
+        Stack<int> stackNew = new Stack<int>(); 
+        Stack<int> stackOld = new Stack<int>(); 
+
+        for (int i = 0; i < q; i++)
+        {
+            string[] parts = Console.ReadLine().Split(' ');
+            int type = int.Parse(parts[0]);
+
+            if (type == 1)
+            {
+
+                int value = int.Parse(parts[1]);
+                stackNew.Push(value);
+            }
+            else
+            {
+                if (stackOld.Count == 0)
+                {
+                    while (stackNew.Count > 0)
+                        stackOld.Push(stackNew.Pop());
+                }
+
+                if (type == 2)
+                {
+
+                    stackOld.Pop();
+                }
+                else if (type == 3)
+                {
+
+                    Console.WriteLine(stackOld.Peek());
+                 }
+             }       
+        }
+    }
+}
